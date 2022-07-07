@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" type="text/css" href="/public/style.css">
+
+    <title>BORGA</title>
+</head>
+<body>
+<header>
+    <h1>BORGA</h1>
+    <p>BOaRd Games Application</p>
+</header>
+
+<div class="navbar">
+    <a type="button" href="/" role="button">Home</a>
+    <a type="button" href="/popularGames" role="button">Get list of most popular games</a>
+    {{#if username}}
+        <a type="button" href="/groups" role="button">Check list of all groups</a>
+        <a type="button" href="/newGroup" role="button">Create new group</a>
+    {{else}}
+        <a type="button" href="/CreateNewUser" role="button">Create new user</a>
+    {{/if}}
+    <a type="button" href="/about" role="button">About Me</a>
+    <form action="/gamesByName" class="search">
+    	<input type="text" placeholder="Search games by name.." name="search">
+    	<button type="submit"><i class="fa fa-search"></i>Go</button>
+    </form>
+</div>
+{{#if username}}
+    <form action='/logout' method='POST'>
+        <input type='submit' value='Logout'>
+        Username: {{username}}
+    </form>
+{{else}}
+    <form action='/authenticate' method='GET'>
+        <input type='submit' value='Login'>
+    </form>
+
+{{/if}}
+<hr>
+{{{body}}}
+
+<footer>
+    <h2>Created by Ricardo Pinto</h2>
+</footer>
+</body>
+</html>

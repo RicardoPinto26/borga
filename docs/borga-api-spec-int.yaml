@@ -1,0 +1,600 @@
+openapi: 3.0.0
+info:
+  description: Borga API
+  version: 2.0.0
+  title: Borga API Documentation
+  contact:
+    email: a47673@alunos.isel.pt
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: games
+  - name: groups
+  - name: users
+paths:
+  /api/games:
+    get:
+      tags:
+        - games
+      summary: Gets the n most popular games
+      description: Gives the n most popular games, by using the Board Games Atlas API
+      parameters:
+        - in: query
+          name: skip
+          description: number of games to skip for pagination
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: limit
+          description: maximum number of games to return
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
+      responses:
+        200:
+          description: Array of the n most popular games
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleGame'
+        400:
+          description: Invalid skip/limit query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        502:
+          description: Board Games Atlas API is not responding
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+  /api/games/{name}:
+    get:
+      tags:
+        - games
+      summary: Find a game by name
+      description: Uses Board Games Atlas API to find a game corresponding to the name. It will return the first result from Board Games Atlas API result set.
+      parameters:
+        - name: name
+          in: path
+          description: name of the game
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: A game has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        404:
+          description: No game found for the name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        502:
+          description: Board Games Atlas API is not responding
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+  /api/games/details/{id}:
+    get:
+      tags:
+        - games
+      summary: Find a game with details by id
+      description: Uses Board Games Atlas API to find a game corresponding to the id. It will return the first result from Board Games Atlas API result set.
+      parameters:
+        - name: id
+          in: path
+          description: id of the game
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: A game has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        404:
+          description: No game found for the id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        502:
+          description: Board Games Atlas API is not responding
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+  /api/groups:
+    get:
+      tags:
+        - groups
+      summary: Get all the groups belonging the user
+      description: Returns all the groups belonging to the user
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: All the groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+        401:
+          description: Missing bearer token. The user is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        403:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        404:
+          description: No groups found for the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+    post:
+      tags:
+        - groups
+      summary: Adds a group
+      description: Adds a group to the user
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Group to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewGroup'
+        required: true
+      responses:
+        201:
+          description: Group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        400:
+          description: Invalid name and/or description provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        401:
+          description: Missing bearer token. The user is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        403:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+  /api/groups/{groupID}:
+    get:
+      tags:
+        - groups
+      summary: Get a group given by id
+      description: Get a group given by id
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupID
+          in: path
+          description: ID of group that to be fetched
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: The found group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        400:
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        401:
+          description: Missing bearer token. The user is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        403:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        404:
+          description: Group with that ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+    put:
+      tags:
+        - groups
+      summary: Updates a group's name and description
+      description: Updates a group in the system by changing its name and description
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupID
+          in: path
+          description: ID of the group to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: New name and description for the group
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewGroup'
+        required: false
+      responses:
+        204:
+          description: Group updated
+        400:
+          description: Invalid ID, name, and/or description provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        401:
+          description: Missing bearer token. The user is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        403:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        404:
+          description: Group with that ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+    delete:
+      tags:
+        - groups
+      summary: Delete a group by ID
+      description: Delete a group by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupID
+          in: path
+          description: ID of the group to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Group deleted
+        400:
+          description: Invalid group ID provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        401:
+          description: Missing bearer token. The user is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        403:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        404:
+          description: Group with that ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+  /api/groups/{groupID}/games:
+    post:
+      tags:
+        - groups
+      summary: Adds a game to a group
+      description: Adds a game to a group
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupID
+          in: path
+          description: ID of group that to be fetched
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: ID of the game to add to a group
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewGame'
+        required: true
+      responses:
+        201:
+          description: Game Added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleGame'
+        400:
+          description: Invalid group ID provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        401:
+          description: Missing bearer token. The user is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        403:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        404:
+          description: Group/Game with that ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        502:
+          description: Board Games Atlas API is not responding
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+  /api/groups/{groupID}/games/{gameID}:
+    delete:
+      tags:
+        - groups
+      summary: Deletes a game from a group
+      description: Deletes a game from a group
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupID
+          in: path
+          description: ID of group that to be fetched
+          required: true
+          schema:
+            type: string
+        - name: gameID
+          in: path
+          description: ID of game to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Game Deleted
+        400:
+          description: Invalid group ID provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        401:
+          description: Missing bearer token. The user is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        403:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        404:
+          description: Group/Game with that ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+  /api/users:
+    post:
+      tags:
+        - users
+      summary: Adds a user
+      description: Adds a user to the system
+      requestBody:
+        description: username and password of the user to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+        required: true
+      responses:
+        201:
+          description: User Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid username/password OR username already in use
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+        500:
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    AppError:
+      type: object
+      description: Application error
+      required:
+        - description
+      properties:
+        description:
+          type: string
+          example: "Board Games Atlas API is not responding"
+    SimpleGame:
+      type: object
+      required:
+        - id
+        - name
+        - image_url
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        image_url:
+          type: string
+    Game:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - url
+        - image_url
+        - mechanics
+        - categories
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        image_url:
+          type: string
+        mechanics:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+    Group:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - games
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        games:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimpleGame'
+    NewGroup:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    NewGame:
+      type: object
+      required:
+        - gameID
+      properties:
+        gameID:
+          type: string
+    NewUser:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    User:
+      type: object
+      required:
+        - username
+        - password
+        - id
+        - groups
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        id:
+          type: string
+          format: uuid
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+servers:
+  - url: https://isel-ipw-2122-1-g26d1.herokuapp.com/
+    description: BORGA @ Heroku

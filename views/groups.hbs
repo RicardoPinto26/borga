@@ -1,0 +1,26 @@
+<div class="container">
+
+    <div class="main">
+        <h1>All the groups</h1>
+
+        {{#each groups}}
+            {{#if beginRow}}
+            <div class="row">
+            {{/if}}
+            <div id="entry-{{group.id}}">
+                <h2>{{group.name}}</h2>
+                <a href="groups/{{group.id}}" class="btn btn-primary">{{group.name}} details</a>
+                <input type='button' value='Delete group' id='but-del-{{group.id}}/{{../userID}}' class='group-del-but'>
+            </div>
+            {{#if endRow}}
+            </div>
+            {{/if}}
+        {{/each}}
+    </div>
+    {{#if groups}}
+        <script src="/public/client.js"></script>
+        <script>
+            setupForList();
+        </script>
+    {{/if}}
+</div>

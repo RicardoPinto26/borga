@@ -1,0 +1,22 @@
+<div class="container">
+
+
+    <div class="main">
+        <h1> Select Group to Add Game</h1>
+        {{#each groups}}
+            {{#if beginRow}}
+            <div class="row">
+            {{/if}}
+            <h2>{{group.name}}</h2>
+            <form action="/addGameToGroup/{{group.id}}/{{group.gameID}}/" method="post">
+                <button>Select</button>
+            </form>
+            {{#if endRow}}
+            </div>
+            {{/if}}
+        {{/each}}
+        <br>
+        <a type="button" href="/" role="button">Cancel</a>
+    </div>
+
+</div>

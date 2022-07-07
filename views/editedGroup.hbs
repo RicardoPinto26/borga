@@ -1,0 +1,12 @@
+
+        <h3>New Name: {{name}}</h3>
+        <h3>New Description: {{description}}</h3>
+        <h4>Are these correct?</h4>
+        <input type='button' value='Yes' id='but-edit-{{groupID}}/{{userID}}/{{name}}/{{description}}' class='group-edit-but'>
+        <a href="/groups/{{groupID}}/edit"><input type='button' value='No'></a>
+
+    <script src="/public/client.js"></script>
+    <script>
+        setupForList();
+    </script>
+

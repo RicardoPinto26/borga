@@ -1,0 +1,29 @@
+<div class="container">
+
+
+    <div class="main">
+        <div class="showcased">
+            <p>Number of games showcased:</p>
+            <form action="/popularGames" method="get">
+                <button name="limit" value="10">10</button>
+                <button name="limit" value="25">25</button>
+                <button name="limit" value="30">30</button>
+            </form>
+        </div>
+        {{#each games}}
+            {{#if beginRow}}
+            <div class="games">
+            {{/if}}
+            <h2>{{game.name}}</h2>
+            <img src={{game.image_url}} alt="" width="200" height="200">
+            <a type="button" href="game/{{game.id}}">{{game.name}} details</a>
+            {{#if ../username}}
+                <a type="button" href="selectGroupToAddGame/{{game.id}}">Add Game to group</a>
+            {{/if}}
+            {{#if endRow}}
+            </div>
+            {{/if}}
+        {{/each}}
+    </div>
+
+</div>

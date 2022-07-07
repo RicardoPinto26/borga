@@ -1,0 +1,31 @@
+<div class="container">
+
+
+    <div class="main">
+        <h2>{{game.name}}</h2>
+        <img src={{game.image_url}} alt="" width="200" height="200">
+        <a type="button" href="{{game.url}}" role="button" class="btn btn-primary btn-sm">Board game Atlas link</a>
+        <h4>Description: </h4>
+        {{{game.description}}}
+        {{#if game.mechanics}}
+            <h4>Mechanics</h4>
+            <ul>
+                {{#each game.mechanics}}
+                    <li>{{this.name}}</li>
+                {{/each}}
+            </ul>
+        {{/if}}
+
+        {{#if game.categories}}
+            <h4>Categories</h4>
+            <ul>
+                {{#each game.categories}}
+                    <li>{{this.name}}</li>
+                {{/each}}
+            </ul>
+        {{/if}}
+        {{#if username}}
+            <a href="/selectGroupToAddGame/{{game.id}}">Add Game to group</a>
+        {{/if}}
+    </div>
+</div>

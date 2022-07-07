@@ -1,0 +1,29 @@
+<div class="container">
+
+    <div class="main">
+        <h1>{{group.name}}</h1>
+        <h3>{{group.description}}</h3>
+        <a href="/groups/{{group.id}}/edit">Edit the groups details</a>
+
+        {{#if group.games}}
+            <h3>Games:</h3>
+            <ul>
+                {{#each group.games}}
+                    <div id="entry-{{this.id}}">
+                        <h2 class="card-title">{{this.name}}</h2>
+                        <img src={{this.image_url}} alt="" width="200" height="200">
+                        <a href="/game/{{this.id}}" class="btn btn-primary">{{this.name}} details</a>
+                        <input type='button' value='Delete from group' id='but-del-{{../group.id}}/{{this.id}}/{{../userID}}' class='game-del-but'>
+                    </div>
+                {{/each}}
+            </ul>
+        {{/if}}
+    </div>
+
+    {{#if group.games}}
+        <script src="/public/client.js"></script>
+        <script>
+            setupForList();
+        </script>
+    {{/if}}
+</div>

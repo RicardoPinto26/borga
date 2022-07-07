@@ -1,0 +1,18 @@
+<div class="container">
+
+
+    <div class="main">
+        <h1>Create New Group</h1>
+        {{#if error}}
+            <p style="color:red">Please input both a name and a description.</p>
+        {{/if}}
+        <form action="/group" method="post">
+            <p>Group Name: <input type="text" name="name"></p>
+            <p>Group Description: <input type="text" name="description"></p>
+            <button>
+                <strong>Create a new group</strong>
+            </button>
+        </form>
+    </div>
+
+</div>
